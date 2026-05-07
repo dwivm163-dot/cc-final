@@ -1,0 +1,150 @@
+:root {
+  --bg: #0f1115;
+  --panel: #1a1d24;
+  --border: #39404d;
+  --text: #d7d1c2;
+  --muted: #9f9888;
+  --accent: #b79b6d;
+  --danger: #d57f7f;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Courier New", Courier, monospace;
+  background:
+    radial-gradient(circle at top, rgba(183, 155, 109, 0.12), transparent 40%),
+    linear-gradient(180deg, #0c0d11 0%, var(--bg) 100%);
+  color: var(--text);
+}
+
+.app-shell {
+  width: min(980px, 92%);
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.archive-header {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(30, 32, 39, 0.95), rgba(18, 20, 26, 0.95));
+  padding: 1rem 1.2rem;
+  box-shadow: 0 12px 24px var(--shadow);
+}
+
+h1,
+h2 {
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.subhead {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+}
+
+.input-panel,
+.output-panel {
+  border: 1px solid var(--border);
+  background-color: var(--panel);
+  padding: 1rem;
+  box-shadow: 0 10px 20px var(--shadow);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+input {
+  background: #11141a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font: inherit;
+  padding: 0.55rem;
+}
+
+input:focus {
+  outline: 1px solid var(--accent);
+  border-color: var(--accent);
+}
+
+button {
+  margin-top: 0.8rem;
+  padding: 0.65rem;
+  border: 1px solid var(--accent);
+  background: rgba(183, 155, 109, 0.12);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+button:hover {
+  background: rgba(183, 155, 109, 0.2);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.status-log {
+  min-height: 84px;
+  border: 1px dashed var(--border);
+  padding: 0.8rem;
+  margin-top: 0.8rem;
+  color: var(--muted);
+  white-space: pre-line;
+}
+
+.record-output {
+  margin-top: 0.9rem;
+  border: 1px solid var(--border);
+  background: #12151c;
+  padding: 1rem;
+  line-height: 1.5;
+}
+
+.record-output p {
+  margin: 0.3rem 0;
+}
+
+.record-output .record-title {
+  color: var(--accent);
+}
+
+.record-output .label {
+  color: var(--muted);
+}
+
+.record-output .warning {
+  color: var(--danger);
+  margin-top: 0.9rem;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+}
