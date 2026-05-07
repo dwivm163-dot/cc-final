@@ -285,33 +285,52 @@ function handleFallbackRetrieve() {
   pendingFallbackContext = null;
 }
 
-function renderRecord(record) {
-  const html = `
-    <p class="record-title">RECORD TYPE: PAST LIFE</p>
-    <p class="record-title">MATCH STATUS: ${escapeHtml(record.matchStatus)}</p>
-    <br />
-    <p><span class="label">ARCHIVE ID:</span> ${escapeHtml(record.archiveId)}</p>
-    <p><span class="label">User:</span> ${escapeHtml(record.userName)}</p>
-    <p><span class="label">Retrieval Note:</span> ${escapeHtml(record.retrievalNote)}</p>
-    <br />
-    <p><span class="label">Source Trace:</span></p>
-    <p>${escapeHtml(record.sourceName)}</p>
-    <p>${escapeHtml(record.sourceDescription)}</p>
-    <br />
-    <p><span class="label">Assigned Past Life:</span></p>
-    <p><span class="label">Name:</span> ${escapeHtml(record.assignedName)}</p>
-    <p><span class="label">Occupation:</span> ${escapeHtml(record.assignedOccupation)}</p>
-    <br />
-    <p><span class="label">Behavioral Pattern:</span></p>
-    <p>${escapeHtml(record.assignedPattern)}</p>
-    <br />
-    <p><span class="label">Final Archive Note:</span></p>
-    <p>${escapeHtml(record.assignedNote)}</p>
-    <p class="warning">This record may not be complete.</p>
-  `;
+async function renderRecord(record) {
+  const lines = [
+    { className: "record-title", html: "RECORD TYPE: PAST LIFE" },
+    { className: "record-title", html: `MATCH STATUS: ${escapeHtml(record.matchStatus)}` },
+    { spacer: true },
+    { html: `<span class="label">ARCHIVE ID:</span> ${escapeHtml(record.archiveId)}` },
+    { html: `<span class="label">User:</span> ${escapeHtml(record.userName)}` },
+    { html: `<span class="label">Retrieval Note:</span> ${escapeHtml(record.retrievalNote)}` },
+    { spacer: true },
+    { html: "<span class=\"label\">Source Trace:</span>" },
+    { html: escapeHtml(record.sourceName) },
+    { html: escapeHtml(record.sourceDescription) },
+    { spacer: true },
+    { html: "<span class=\"label\">Assigned Past Life:</span>" },
+    { html: `<span class="label">Name:</span> ${escapeHtml(record.assignedName)}` },
+    { html: `<span class="label">Occupation:</span> ${escapeHtml(record.assignedOccupation)}` },
+    { spacer: true },
+    { html: "<span class=\"label\">Behavioral Pattern:</span>" },
+    { html: escapeHtml(record.assignedPattern) },
+    { spacer: true },
+    { html: "<span class=\"label\">Final Archive Note:</span>" },
+    { html: escapeHtml(record.assignedNote) },
+    { className: "warning", html: "This record may not be complete." }
+  ];
 
-  recordOutput.innerHTML = html;
+  recordOutput.innerHTML = "";
   recordOutput.classList.remove("hidden");
+  await writeRecordLines(lines);
+}
+
+async function writeRecordLines(lines) {
+  for (const line of lines) {
+    if (line.spacer) {
+      const spacer = document.createElement("p");
+      spacer.innerHTML = "&nbsp;";
+      recordOutput.append(spacer);
+      await wait(60);
+      continue;
+    }
+
+    const paragraph = document.createElement("p");
+    paragraph.className = `writing-line ${line.className || ""}`.trim();
+    paragraph.innerHTML = line.html;
+    recordOutput.append(paragraph);
+    await wait(130);
+  }
 }
 
 function escapeHtml(value) {

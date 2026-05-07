@@ -1,14 +1,14 @@
 :root {
-  --bg-ink: #11100d;
-  --bg-wood: #1c1814;
-  --panel-dark: #211b16;
-  --panel-paper: #e7dcc5;
-  --border: #5f5142;
-  --text-main: #e3d8c3;
-  --text-muted: #b6a891;
-  --text-paper: #2d241b;
-  --accent: #b18958;
-  --danger: #b45e5e;
+  --bg-ink: #14110e;
+  --bg-wood: #241b14;
+  --paper: #e7dcc6;
+  --paper-deep: #d8c7a9;
+  --ink: #2c2118;
+  --border: #81684d;
+  --accent: #7d4b2f;
+  --text-main: #dfcfb7;
+  --text-muted: #9d8669;
+  --danger: #9d3f3f;
   --shadow: rgba(0, 0, 0, 0.5);
 }
 
@@ -19,40 +19,43 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Special Elite", "Courier New", monospace;
   background:
-    radial-gradient(circle at 12% 20%, rgba(177, 137, 88, 0.1), transparent 28%),
-    radial-gradient(circle at 80% 12%, rgba(137, 99, 66, 0.13), transparent 26%),
+    radial-gradient(circle at 12% 20%, rgba(177, 137, 88, 0.13), transparent 30%),
+    radial-gradient(circle at 80% 12%, rgba(137, 99, 66, 0.16), transparent 30%),
     repeating-linear-gradient(
       0deg,
       rgba(255, 255, 255, 0.015),
       rgba(255, 255, 255, 0.015) 1px,
       transparent 1px,
-      transparent 3px
+      transparent 2px
     ),
     linear-gradient(180deg, var(--bg-ink) 0%, var(--bg-wood) 100%);
-  color: var(--text-main);
-  letter-spacing: 0.01em;
+  color: #f0e6d5;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.45) 100%);
 }
 
 .app-shell {
-  width: min(1020px, 92%);
-  margin: 2.4rem auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.4rem;
+  width: min(1100px, 94%);
+  margin: 1.8rem auto 2.4rem;
 }
 
 .archive-header {
-  grid-column: 1 / -1;
-  border: 1px solid #6f5d47;
-  outline: 1px solid rgba(215, 187, 140, 0.22);
-  outline-offset: -6px;
+  border: 1px solid #6f5a45;
   background:
-    linear-gradient(90deg, rgba(177, 137, 88, 0.06), transparent 40%),
-    linear-gradient(180deg, #2c221a 0%, #1b1510 100%);
+    linear-gradient(90deg, rgba(177, 137, 88, 0.08), transparent 60%),
+    linear-gradient(180deg, #352719 0%, #231910 100%);
   padding: 1.2rem 1.4rem;
-  box-shadow: 0 14px 28px var(--shadow);
+  box-shadow: 0 12px 22px var(--shadow);
+  margin-bottom: 1.2rem;
 }
 
 h1,
@@ -60,7 +63,7 @@ h2 {
   margin: 0;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Cormorant Garamond", Georgia, serif;
   font-weight: 600;
 }
 
@@ -72,16 +75,76 @@ h2 {
   font-size: 0.8rem;
 }
 
-.input-panel,
-.output-panel {
-  border: 1px solid var(--border);
-  outline: 1px solid rgba(200, 171, 130, 0.18);
-  outline-offset: -5px;
+.book-spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid #8f7558;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.book-spread::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 34px;
+  transform: translateX(-50%);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 70%),
-    var(--panel-dark);
-  padding: 1.1rem;
-  box-shadow: 0 10px 20px var(--shadow);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.2));
+  z-index: 3;
+}
+
+.page {
+  position: relative;
+  min-height: 640px;
+  padding: 1.35rem 1.3rem 1.5rem;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(94, 67, 43, 0.06),
+      rgba(94, 67, 43, 0.06) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
+  color: var(--ink);
+}
+
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(122, 92, 62, 0.35);
+  pointer-events: none;
+}
+
+.input-panel {
+  border-right: 1px solid rgba(68, 50, 33, 0.45);
+  padding-right: 2.3rem;
+}
+
+.output-panel {
+  border-left: 1px solid rgba(68, 50, 33, 0.45);
+  padding-left: 2.3rem;
+}
+
+.page-note {
+  margin: 0.35rem 0 0.9rem;
+  font-family: "Caveat", "Brush Script MT", cursive;
+  font-size: 1.45rem;
+  color: #70482e;
+}
+
+label {
+  font-size: 0.78rem;
+  color: #654a31;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
 }
 
 form {
@@ -91,42 +154,36 @@ form {
   margin-top: 0.95rem;
 }
 
-label {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
 input {
-  background:
-    linear-gradient(180deg, rgba(32, 27, 21, 0.95), rgba(22, 19, 15, 0.95));
-  border: 1px solid #4f4337;
-  color: var(--text-main);
-  font: inherit;
+  background: rgba(255, 250, 242, 0.55);
+  border: 1px solid #8f6d4b;
+  color: #2d2418;
+  font-family: "Special Elite", "Courier New", monospace;
   padding: 0.58rem;
+  border-radius: 2px;
 }
 
 input:focus {
-  outline: 1px solid var(--accent);
+  outline: 1px solid #b17640;
   border-color: var(--accent);
 }
 
 button {
   margin-top: 0.9rem;
   padding: 0.7rem;
-  border: 1px solid var(--accent);
+  border: 1px solid #6f3f26;
   background:
-    linear-gradient(180deg, rgba(177, 137, 88, 0.28), rgba(87, 62, 36, 0.3));
-  color: #f2e6d2;
+    linear-gradient(180deg, rgba(163, 104, 63, 0.9), rgba(112, 64, 38, 0.95));
+  color: #f7ede1;
   cursor: pointer;
-  font: inherit;
+  font-family: "Special Elite", "Courier New", monospace;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.09em;
+  border-radius: 2px;
 }
 
 button:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.12);
 }
 
 button:disabled {
@@ -135,56 +192,81 @@ button:disabled {
 }
 
 .status-log {
-  min-height: 94px;
-  border: 1px dashed #76624b;
-  background: rgba(15, 12, 10, 0.35);
+  min-height: 92px;
+  border: 1px dashed #846547;
+  background: rgba(245, 232, 211, 0.45);
   padding: 0.9rem;
-  margin-top: 0.9rem;
-  color: #d2c3ac;
+  margin-top: 0.8rem;
+  color: #533d2a;
   white-space: pre-line;
   line-height: 1.6;
+  font-family: "Caveat", "Brush Script MT", cursive;
+  font-size: 1.3rem;
 }
 
 .record-output {
-  margin-top: 1rem;
-  border: 1px solid #8b7459;
+  margin-top: 0.95rem;
+  min-height: 320px;
+  border: 1px solid #8b6e4e;
   background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.2), transparent 55%),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.24), transparent 56%),
     repeating-linear-gradient(
       0deg,
       rgba(46, 34, 23, 0.05),
       rgba(46, 34, 23, 0.05) 1px,
       transparent 1px,
-      transparent 4px
+      transparent 26px
     ),
-    var(--panel-paper);
-  color: var(--text-paper);
+    #eadfc9;
+  color: var(--ink);
   padding: 1.15rem;
-  line-height: 1.5;
+  line-height: 1.6;
   box-shadow: inset 0 0 0 1px rgba(109, 84, 56, 0.35);
+  font-family: "Caveat", "Brush Script MT", cursive;
+  font-size: 1.42rem;
 }
 
 .record-output p {
-  margin: 0.3rem 0;
+  margin: 0.2rem 0;
 }
 
 .record-output .record-title {
   color: #6d4f30;
-  letter-spacing: 0.08em;
-  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0.05em;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.05rem;
+  text-transform: uppercase;
 }
 
 .record-output .label {
-  color: #6d543a;
+  color: #654c32;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 0.84rem;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .record-output .warning {
   color: var(--danger);
-  margin-top: 1rem;
+  margin-top: 0.8rem;
   font-style: italic;
+}
+
+.writing-line {
+  opacity: 0;
+  animation: fadeInk 0.25s ease forwards;
+}
+
+@keyframes fadeInk {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hidden {
@@ -192,7 +274,18 @@ button:disabled {
 }
 
 @media (max-width: 860px) {
-  .app-shell {
+  .book-spread {
     grid-template-columns: 1fr;
+  }
+
+  .book-spread::before {
+    display: none;
+  }
+
+  .input-panel,
+  .output-panel {
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+    border: none;
   }
 }

@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Past Life Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Special+Elite&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,29 +19,33 @@
       <p class="subhead">Digital Divination Record System</p>
     </header>
 
-    <section class="input-panel">
-      <h2>Record Intake</h2>
-      <form id="archive-form">
-        <label for="userName">Name</label>
-        <input id="userName" name="userName" type="text" placeholder="Enter your name" required />
+    <section class="book-spread">
+      <section class="page input-panel">
+        <h2>Intake Ledger</h2>
+        <p class="page-note">Enter your present-life details.</p>
+        <form id="archive-form">
+          <label for="userName">Name</label>
+          <input id="userName" name="userName" type="text" placeholder="Enter your name" required />
 
-        <label for="birthDate">Birth Date</label>
-        <input id="birthDate" name="birthDate" type="date" required />
+          <label for="birthDate">Birth Date</label>
+          <input id="birthDate" name="birthDate" type="date" required />
 
-        <label for="birthTime">Birth Time (Optional)</label>
-        <input id="birthTime" name="birthTime" type="time" />
+          <label for="birthTime">Birth Time (Optional)</label>
+          <input id="birthTime" name="birthTime" type="time" />
 
-        <label for="birthPlace">Place of Birth (Optional)</label>
-        <input id="birthPlace" name="birthPlace" type="text" placeholder="City, Country" />
+          <label for="birthPlace">Place of Birth (Optional)</label>
+          <input id="birthPlace" name="birthPlace" type="text" placeholder="City, Country" />
 
-        <button type="submit" id="retrieveBtn">Retrieve Record</button>
-      </form>
-    </section>
+          <button type="submit" id="retrieveBtn">Retrieve Record</button>
+        </form>
+      </section>
 
-    <section class="output-panel">
-      <h2>Archive Console</h2>
-      <div id="statusLog" class="status-log" aria-live="polite"></div>
-      <article id="recordOutput" class="record-output hidden" aria-live="polite"></article>
+      <section class="page output-panel">
+        <h2>Archive Page</h2>
+        <p class="page-note">Recovered entries appear on this page.</p>
+        <div id="statusLog" class="status-log" aria-live="polite"></div>
+        <article id="recordOutput" class="record-output hidden" aria-live="polite"></article>
+      </section>
     </section>
   </main>
 
