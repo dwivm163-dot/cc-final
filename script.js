@@ -253,7 +253,6 @@ function renderPastLifeRecord({ person, archiveId, userName, matchStatus, retrie
 
 function renderNewSoulPrompt() {
   recordOutput.innerHTML = `
-    <p class="record-title">RECORD TYPE: PAST LIFE</p>
     <p class="record-title">MATCH STATUS: NO EXACT YEAR TRACE</p>
     <br />
     <p class="warning">No prior archive identity detected.</p>
@@ -287,16 +286,10 @@ function handleFallbackRetrieve() {
 
 async function renderRecord(record) {
   const lines = [
-    { className: "record-title", html: "RECORD TYPE: PAST LIFE" },
     { className: "record-title", html: `MATCH STATUS: ${escapeHtml(record.matchStatus)}` },
     { spacer: true },
     { html: `<span class="label">ARCHIVE ID:</span> ${escapeHtml(record.archiveId)}` },
     { html: `<span class="label">User:</span> ${escapeHtml(record.userName)}` },
-    { html: `<span class="label">Retrieval Note:</span> ${escapeHtml(record.retrievalNote)}` },
-    { spacer: true },
-    { html: "<span class=\"label\">Source Trace:</span>" },
-    { html: escapeHtml(record.sourceName) },
-    { html: escapeHtml(record.sourceDescription) },
     { spacer: true },
     { html: "<span class=\"label\">Assigned Past Life:</span>" },
     { html: `<span class="label">Name:</span> ${escapeHtml(record.assignedName)}` },
