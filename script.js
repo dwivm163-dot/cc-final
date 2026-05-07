@@ -8,65 +8,65 @@ const interpretationMap = [
     keywords: ["writer", "poet", "author", "artist", "composer", "painter"],
     category: "art/literature",
     patterns: [
-      "Translated emotion into form.",
-      "Returned often to the same unfinished themes.",
-      "Was remembered more through fragments than facts."
+      "You tended to process emotion by turning it into language, image, or sound.",
+      "You revised the same ideas repeatedly until they felt exact.",
+      "You were remembered through your work more than through personal details."
     ],
     notes: [
-      "Left behind traces that outlived the body.",
-      "Repeated beauty until it became ritual."
+      "Your record suggests a life organized around expression and craft.",
+      "The archive marks a pattern of creating meaning from instability."
     ]
   },
   {
     keywords: ["politician", "ruler", "king", "queen", "emperor", "president", "minister"],
     category: "power/politics",
     patterns: [
-      "Lived close to systems of power.",
-      "Learned to move carefully around authority.",
-      "Mistook structure for safety."
+      "You operated inside institutions where every choice had public consequences.",
+      "You learned to read hierarchy quickly and respond with caution.",
+      "You prioritized order, even when the system itself was unstable."
     ],
     notes: [
-      "Witnessed power change hands.",
-      "Served structures that did not last."
+      "Your trace points to a life shaped by responsibility, negotiation, and control.",
+      "The archive indicates repeated exposure to changing power structures."
     ]
   },
   {
     keywords: ["scientist", "mathematician", "inventor", "engineer", "physician", "astronomer"],
     category: "science/discovery",
     patterns: [
-      "Observed patterns others overlooked.",
-      "Trusted precision more than intuition.",
-      "Searched for order inside uncertainty."
+      "You trusted observation and evidence before personal certainty.",
+      "You returned to difficult problems until a pattern became visible.",
+      "You preferred precision, method, and repeatable results."
     ],
     notes: [
-      "Left behind work that was recognized out of time.",
-      "Named what others could not yet see."
+      "Your record suggests a life spent naming and testing the unknown.",
+      "The archive shows a consistent drive to impose structure on uncertainty."
     ]
   },
   {
     keywords: ["soldier", "general", "commander", "war", "military"],
     category: "conflict",
     patterns: [
-      "Moved often and never fully settled.",
-      "Stayed alert even in moments of calm.",
-      "Followed orders while carrying doubt."
+      "You adapted quickly to risk and changing conditions.",
+      "Even in calm periods, you remained alert and task-focused.",
+      "You carried duty and uncertainty at the same time."
     ],
     notes: [
-      "Returned changed beyond recognition.",
-      "Left before peace arrived."
+      "Your trace indicates a life marked by pressure, movement, and survival.",
+      "The archive reflects decisions made under conflict rather than comfort."
     ]
   },
   {
     keywords: ["saint", "monk", "priest", "religious", "philosopher", "spiritual"],
     category: "ritual/belief",
     patterns: [
-      "Found meaning through repetition and ritual.",
-      "Moved through life according to invisible structures.",
-      "Attached significance to small gestures."
+      "You relied on routine, contemplation, or ritual to stabilize daily life.",
+      "You searched for meaning through disciplined inner practice.",
+      "You treated small actions as morally or spiritually significant."
     ],
     notes: [
-      "Returned daily to the same sacred actions.",
-      "Believed devotion could shape reality."
+      "Your record suggests identity was built through repetition and belief.",
+      "The archive points to a life structured by devotion, ethics, or reflection."
     ]
   }
 ];
@@ -74,13 +74,13 @@ const interpretationMap = [
 const defaultInterpretation = {
   category: "unclassified",
   patterns: [
-    "Carried a pattern that resisted explanation.",
-    "Lived between recognition and disappearance.",
-    "Left behind a trace without a complete record."
+    "You adapted to changing roles without leaving a single clear identity.",
+    "You moved between visibility and anonymity across different contexts.",
+    "Your record is coherent in fragments, but incomplete as a whole."
   ],
   notes: [
-    "The archive preserves only fragments.",
-    "This identity could not be fully reconstructed."
+    "The archive preserves evidence, but not the full continuity of the life.",
+    "This reconstruction remains partial due to limited historical detail."
   ]
 };
 
@@ -114,8 +114,9 @@ form.addEventListener("submit", async (event) => {
       "No clear occupation or description available.";
 
     const interpretation = getInterpretation(personDescription);
-    const assignedPattern = pickRandom(interpretation.patterns);
-    const assignedNote = pickRandom(interpretation.notes);
+    const seed = `${personName}-${personDescription}`;
+    const assignedPattern = pickBySeed(interpretation.patterns, seed);
+    const assignedNote = pickBySeed(interpretation.notes, `${seed}-note`);
     const archiveId = buildArchiveId(month, day, userName, year);
 
     renderRecord({
@@ -188,6 +189,19 @@ function pickRandom(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function pickBySeed(items, seedText) {
+  const seedNumber = stringToSeed(seedText);
+  return items[seedNumber % items.length];
+}
+
+function stringToSeed(text) {
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
 function setStatus(message) {
   statusLog.textContent = message;
 }
@@ -214,8 +228,6 @@ function renderRecord(record) {
   const html = `
     <p class="record-title">RECORD TYPE: PAST LIFE</p>
     <p class="record-title">MATCH STATUS: PARTIAL</p>
-    <p class="record-title">SOURCE TRACE: WIKIPEDIA</p>
-    <p class="record-title">CONFIDENCE: UNSTABLE</p>
     <br />
     <p><span class="label">ARCHIVE ID:</span> ${escapeHtml(record.archiveId)}</p>
     <p><span class="label">User:</span> ${escapeHtml(record.userName)}</p>
