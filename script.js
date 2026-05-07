@@ -2,6 +2,7 @@ const form = document.getElementById("archive-form");
 const statusLog = document.getElementById("statusLog");
 const recordOutput = document.getElementById("recordOutput");
 const retrieveBtn = document.getElementById("retrieveBtn");
+let pendingFallbackContext = null;
 
 const interpretationMap = [
   {
@@ -96,6 +97,7 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  pendingFallbackContext = null;
   recordOutput.classList.add("hidden");
   recordOutput.innerHTML = "";
   retrieveBtn.disabled = true;
@@ -106,28 +108,27 @@ form.addEventListener("submit", async (event) => {
     const { month, day, year } = getDateParts(birthDate);
     const apiUrl = `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/deaths/${month}/${day}`;
 
-    const person = await fetchRandomPerson(apiUrl, year);
-    const personName = person?.text || person?.pages?.[0]?.normalizedtitle || "Unknown record";
-    const personDescription =
-      person?.pages?.[0]?.description ||
-      person?.pages?.[0]?.extract ||
-      "No clear occupation or description available.";
-
-    const interpretation = getInterpretation(personDescription);
-    const seed = `${personName}-${personDescription}`;
-    const assignedPattern = pickBySeed(interpretation.patterns, seed);
-    const assignedNote = pickBySeed(interpretation.notes, `${seed}-note`);
+    const deaths = await fetchDeaths(apiUrl);
     const archiveId = buildArchiveId(month, day, userName, year);
+    const exactYearMatches = deaths.filter((person) => String(person?.year) === String(year));
 
-    renderRecord({
+    if (exactYearMatches.length === 0) {
+      pendingFallbackContext = {
+        archiveId,
+        userName,
+        deaths
+      };
+      renderNewSoulPrompt();
+      return;
+    }
+
+    const person = pickRandom(exactYearMatches);
+    renderPastLifeRecord({
+      person,
       archiveId,
       userName,
-      sourceName: personName,
-      sourceDescription: personDescription,
-      assignedName: personName,
-      assignedOccupation: personDescription,
-      assignedPattern,
-      assignedNote
+      matchStatus: "PARTIAL",
+      retrievalNote: "Exact date-year trace confirmed."
     });
   } catch (error) {
     setStatus(`Record retrieval failed: ${error.message}`);
@@ -145,7 +146,7 @@ function getDateParts(dateString) {
   };
 }
 
-async function fetchRandomPerson(apiUrl, birthYear) {
+async function fetchDeaths(apiUrl) {
   const response = await fetch(apiUrl);
   if (!response.ok) {
     throw new Error("Could not connect to the deaths archive API.");
@@ -158,16 +159,7 @@ async function fetchRandomPerson(apiUrl, birthYear) {
     throw new Error("No historical traces found for this date.");
   }
 
-  // Enforce full-date matching: same month/day (from endpoint) and same year as user birth year.
-  const exactYearMatches = deaths.filter((person) => String(person?.year) === String(birthYear));
-
-  if (exactYearMatches.length === 0) {
-    throw new Error(
-      "No prior archive identity detected. You are a new soul. This appears to be your first recorded life."
-    );
-  }
-
-  return pickRandom(exactYearMatches);
+  return deaths;
 }
 
 function getInterpretation(text) {
@@ -233,13 +225,74 @@ async function runLoadingSequence() {
   }
 }
 
+function renderPastLifeRecord({ person, archiveId, userName, matchStatus, retrievalNote }) {
+  const personName = person?.text || person?.pages?.[0]?.normalizedtitle || "Unknown record";
+  const personDescription =
+    person?.pages?.[0]?.description ||
+    person?.pages?.[0]?.extract ||
+    "No clear occupation or description available.";
+
+  const interpretation = getInterpretation(personDescription);
+  const seed = `${personName}-${personDescription}`;
+  const assignedPattern = pickBySeed(interpretation.patterns, seed);
+  const assignedNote = pickBySeed(interpretation.notes, `${seed}-note`);
+
+  renderRecord({
+    archiveId,
+    userName,
+    matchStatus,
+    retrievalNote,
+    sourceName: personName,
+    sourceDescription: personDescription,
+    assignedName: personName,
+    assignedOccupation: personDescription,
+    assignedPattern,
+    assignedNote
+  });
+}
+
+function renderNewSoulPrompt() {
+  recordOutput.innerHTML = `
+    <p class="record-title">RECORD TYPE: PAST LIFE</p>
+    <p class="record-title">MATCH STATUS: NO EXACT YEAR TRACE</p>
+    <br />
+    <p class="warning">No prior archive identity detected.</p>
+    <p class="warning">You are a new soul. This appears to be your first recorded life.</p>
+    <br />
+    <button type="button" id="fallbackRetrieveBtn">Retrieve Nearest Trace (Same Month/Day)</button>
+  `;
+  recordOutput.classList.remove("hidden");
+
+  const fallbackBtn = document.getElementById("fallbackRetrieveBtn");
+  fallbackBtn.addEventListener("click", handleFallbackRetrieve, { once: true });
+}
+
+function handleFallbackRetrieve() {
+  if (!pendingFallbackContext) {
+    setStatus("Fallback retrieval context was lost. Please run retrieval again.");
+    return;
+  }
+
+  const fallbackPerson = pickRandom(pendingFallbackContext.deaths);
+  renderPastLifeRecord({
+    person: fallbackPerson,
+    archiveId: pendingFallbackContext.archiveId,
+    userName: pendingFallbackContext.userName,
+    matchStatus: "PARTIAL - FALLBACK TRACE",
+    retrievalNote:
+      "No exact year match found. Nearest trace retrieved from the same month/day archive."
+  });
+  pendingFallbackContext = null;
+}
+
 function renderRecord(record) {
   const html = `
     <p class="record-title">RECORD TYPE: PAST LIFE</p>
-    <p class="record-title">MATCH STATUS: PARTIAL</p>
+    <p class="record-title">MATCH STATUS: ${escapeHtml(record.matchStatus)}</p>
     <br />
     <p><span class="label">ARCHIVE ID:</span> ${escapeHtml(record.archiveId)}</p>
     <p><span class="label">User:</span> ${escapeHtml(record.userName)}</p>
+    <p><span class="label">Retrieval Note:</span> ${escapeHtml(record.retrievalNote)}</p>
     <br />
     <p><span class="label">Source Trace:</span></p>
     <p>${escapeHtml(record.sourceName)}</p>
