@@ -231,6 +231,7 @@ function renderPastLifeRecord({ person, archiveId, userName, matchStatus, retrie
     person?.pages?.[0]?.description ||
     person?.pages?.[0]?.extract ||
     "No clear occupation or description available.";
+  const personOrigin = getPastLifeOrigin(personDescription, person?.pages?.[0]?.extract);
 
   const interpretation = getInterpretation(personDescription);
   const seed = `${personName}-${personDescription}`;
@@ -244,6 +245,7 @@ function renderPastLifeRecord({ person, archiveId, userName, matchStatus, retrie
     retrievalNote,
     sourceName: personName,
     sourceDescription: personDescription,
+    sourceOrigin: personOrigin,
     assignedName: personName,
     assignedOccupation: personDescription,
     assignedPattern,
@@ -294,6 +296,7 @@ async function renderRecord(record) {
     { html: "<span class=\"label\">Assigned Past Life:</span>" },
     { html: `<span class="label">Name:</span> ${escapeHtml(record.assignedName)}` },
     { html: `<span class="label">Occupation:</span> ${escapeHtml(record.assignedOccupation)}` },
+    { html: `<span class="label">Origin/Nationality:</span> ${escapeHtml(record.sourceOrigin)}` },
     { spacer: true },
     { html: "<span class=\"label\">Behavioral Pattern:</span>" },
     { html: escapeHtml(record.assignedPattern) },
@@ -306,6 +309,27 @@ async function renderRecord(record) {
   recordOutput.innerHTML = "";
   recordOutput.classList.remove("hidden");
   await writeRecordLines(lines);
+}
+
+function getPastLifeOrigin(description, extractText) {
+  if (description) {
+    // Many Wikipedia descriptions start with a nationality adjective, e.g. "English mathematician".
+    const firstPhrase = description.split(",")[0];
+    const match = firstPhrase.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\s/);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  if (extractText) {
+    // Fallback attempt: capture "born in <place>" from short extract text.
+    const bornInMatch = extractText.match(/\bborn in ([A-Z][^,.]{2,40})/i);
+    if (bornInMatch && bornInMatch[1]) {
+      return bornInMatch[1].trim();
+    }
+  }
+
+  return "Not clearly available in this archive trace.";
 }
 
 async function writeRecordLines(lines) {
