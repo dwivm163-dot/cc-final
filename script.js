@@ -106,7 +106,7 @@ form.addEventListener("submit", async (event) => {
     const { month, day, year } = getDateParts(birthDate);
     const apiUrl = `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/deaths/${month}/${day}`;
 
-    const person = await fetchRandomPerson(apiUrl);
+    const person = await fetchRandomPerson(apiUrl, year);
     const personName = person?.text || person?.pages?.[0]?.normalizedtitle || "Unknown record";
     const personDescription =
       person?.pages?.[0]?.description ||
@@ -145,7 +145,7 @@ function getDateParts(dateString) {
   };
 }
 
-async function fetchRandomPerson(apiUrl) {
+async function fetchRandomPerson(apiUrl, birthYear) {
   const response = await fetch(apiUrl);
   if (!response.ok) {
     throw new Error("Could not connect to the deaths archive API.");
@@ -158,7 +158,16 @@ async function fetchRandomPerson(apiUrl) {
     throw new Error("No historical traces found for this date.");
   }
 
-  return pickRandom(deaths);
+  // Enforce full-date matching: same month/day (from endpoint) and same year as user birth year.
+  const exactYearMatches = deaths.filter((person) => String(person?.year) === String(birthYear));
+
+  if (exactYearMatches.length === 0) {
+    throw new Error(
+      "No prior archive identity detected. You are a new soul. This appears to be your first recorded life."
+    );
+  }
+
+  return pickRandom(exactYearMatches);
 }
 
 function getInterpretation(text) {
