@@ -1,0 +1,234 @@
+/* Grey-box prototype: same behavior as index.html + script.js; layout + contrast only */
+
+:root {
+  --gb-bg: #d9d9d9;
+  --gb-surface: #f2f2f2;
+  --gb-card: #ffffff;
+  --gb-border: #737373;
+  --gb-border-soft: #a3a3a3;
+  --gb-text: #171717;
+  --gb-muted: #525252;
+  --gb-fill: #e5e5e5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+    monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gb-text);
+  background: var(--gb-bg);
+  min-height: 100vh;
+}
+
+.gb-app {
+  width: min(960px, 94vw);
+  margin: 1rem auto 2rem;
+}
+
+.gb-banner {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gb-muted);
+  background: var(--gb-surface);
+  border: 1px dashed var(--gb-border-soft);
+}
+
+.gb-header {
+  background: var(--gb-card);
+  border: 2px solid var(--gb-border);
+  border-radius: 2px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.gb-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.gb-header .subhead {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--gb-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.gb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 2px solid var(--gb-border);
+  border-radius: 2px;
+  background: var(--gb-card);
+  overflow: hidden;
+}
+
+.gb-panel {
+  padding: 1rem 1.1rem 1.15rem;
+  border-right: 2px dashed var(--gb-border-soft);
+  min-height: 480px;
+}
+
+.gb-panel:last-child {
+  border-right: none;
+}
+
+.gb-panel h2 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.gb-panel .page-note {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  color: var(--gb-muted);
+  padding: 0.35rem 0.45rem;
+  background: var(--gb-surface);
+  border: 1px dashed var(--gb-border-soft);
+  font-family: inherit;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gb-muted);
+}
+
+input {
+  font: inherit;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--gb-border-soft);
+  border-radius: 2px;
+  background: var(--gb-fill);
+  color: var(--gb-text);
+}
+
+input:focus {
+  outline: 2px solid var(--gb-border);
+  outline-offset: 1px;
+}
+
+button[type="submit"],
+#fallbackRetrieveBtn {
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--gb-text);
+  border-radius: 2px;
+  background: var(--gb-text);
+  color: var(--gb-card);
+}
+
+button[type="submit"]:hover:not(:disabled),
+#fallbackRetrieveBtn:hover {
+  background: #404040;
+  border-color: #404040;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-log {
+  min-height: 4.5rem;
+  margin-top: 0.35rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px dashed var(--gb-border-soft);
+  background: var(--gb-surface);
+  color: var(--gb-muted);
+  font-size: 0.8rem;
+  white-space: pre-line;
+  line-height: 1.45;
+}
+
+.record-output {
+  margin-top: 0.65rem;
+  min-height: 200px;
+  padding: 0.75rem 0.85rem;
+  border: 2px dashed var(--gb-border-soft);
+  background: var(--gb-surface);
+  color: var(--gb-text);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  font-family: inherit;
+}
+
+.record-output p {
+  margin: 0.2rem 0;
+}
+
+.record-output .record-title {
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gb-text);
+  font-family: inherit;
+}
+
+.record-output .label {
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gb-muted);
+  font-family: inherit;
+}
+
+.record-output .warning {
+  color: #7a2e2e;
+  margin-top: 0.5rem;
+  font-style: normal;
+}
+
+/* No decorative “ink” animation in grey-box; script still staggers lines */
+.writing-line {
+  opacity: 1;
+  animation: none;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .gb-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gb-panel {
+    border-right: none;
+    border-bottom: 2px dashed var(--gb-border-soft);
+    min-height: auto;
+  }
+
+  .gb-panel:last-child {
+    border-bottom: none;
+  }
+}
