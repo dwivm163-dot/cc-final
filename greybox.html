@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>[Grey-box] Past Life Archive</title>
+    <!--
+      Wireframe only: layout + zones + labels. No API, no final art direction.
+      Mirrors CC_Community-Quiz greybox pattern (structure + logic zones).
+    -->
+    <style>
+      :root {
+        --gb-bg: #d9d9d9;
+        --gb-surface: #f2f2f2;
+        --gb-card: #ffffff;
+        --gb-border: #737373;
+        --gb-border-soft: #a3a3a3;
+        --gb-text: #171717;
+        --gb-muted: #525252;
+        --gb-fill: #e5e5e5;
+        --gb-fill-strong: #c4c4c4;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
+          Consolas, monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--gb-text);
+        background: var(--gb-bg);
+        min-height: 100vh;
+      }
+
+      .app {
+        width: min(960px, 94vw);
+        margin: 1.25rem auto 2.5rem;
+      }
+
+      .kicker {
+        margin: 0 0 0.35rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gb-muted);
+      }
+
+      .header-card {
+        background: var(--gb-card);
+        border: 2px solid var(--gb-border);
+        border-radius: 4px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.08);
+      }
+
+      .header-card h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      .header-card p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--gb-muted);
+      }
+
+      /* Book spread: left = intake, right = console + record */
+      .book-spread {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border: 2px solid var(--gb-border);
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.08);
+        background: var(--gb-card);
+      }
+
+      .page {
+        padding: 1.25rem 1.35rem 1.5rem;
+        border-right: 2px dashed var(--gb-border-soft);
+        min-height: 520px;
+      }
+
+      .page:last-child {
+        border-right: none;
+      }
+
+      .page h2 {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      .page-note {
+        margin: 0 0 1rem;
+        font-size: 0.75rem;
+        color: var(--gb-muted);
+        padding: 0.4rem 0.5rem;
+        background: var(--gb-surface);
+        border: 1px dashed var(--gb-border-soft);
+      }
+
+      .field {
+        margin-bottom: 0.75rem;
+      }
+
+      .field label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--gb-muted);
+        margin-bottom: 0.25rem;
+      }
+
+      .field .input-placeholder {
+        height: 2.25rem;
+        background: var(--gb-fill);
+        border: 1px solid var(--gb-border-soft);
+        border-radius: 2px;
+      }
+
+      .primary-btn {
+        margin-top: 0.5rem;
+        width: 100%;
+        padding: 0.6rem 1rem;
+        font: inherit;
+        font-weight: 700;
+        cursor: default;
+        border-radius: 2px;
+        border: 2px solid var(--gb-text);
+        background: var(--gb-text);
+        color: var(--gb-card);
+      }
+
+      .status-zone {
+        min-height: 5.5rem;
+        margin-bottom: 1rem;
+        padding: 0.65rem 0.75rem;
+        border: 1px dashed var(--gb-border-soft);
+        background: var(--gb-surface);
+        font-size: 0.75rem;
+        color: var(--gb-muted);
+        white-space: pre-line;
+      }
+
+      .record-zone {
+        min-height: 280px;
+        padding: 1rem;
+        border: 2px dashed var(--gb-border-soft);
+        background: repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 6px,
+            rgba(0, 0, 0, 0.04) 6px,
+            rgba(0, 0, 0, 0.04) 12px
+          ),
+          var(--gb-surface);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .record-line {
+        height: 0.85rem;
+        max-width: 100%;
+        background: var(--gb-fill-strong);
+        border-radius: 1px;
+      }
+
+      .record-line.short {
+        max-width: 55%;
+      }
+
+      .record-line.medium {
+        max-width: 78%;
+      }
+
+      .annotation {
+        margin-top: 0.75rem;
+        font-size: 0.7rem;
+        color: var(--gb-muted);
+        padding: 0.5rem;
+        border-left: 3px solid var(--gb-border-soft);
+        background: var(--gb-card);
+      }
+
+      .fallback-zone {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border: 1px dashed var(--gb-border);
+        background: var(--gb-fill);
+        font-size: 0.72rem;
+        color: var(--gb-muted);
+      }
+
+      .fallback-zone .secondary-btn {
+        margin-top: 0.5rem;
+        padding: 0.45rem 0.75rem;
+        font: inherit;
+        font-weight: 600;
+        border: 2px solid var(--gb-border);
+        background: var(--gb-card);
+        cursor: default;
+      }
+
+      @media (max-width: 720px) {
+        .book-spread {
+          grid-template-columns: 1fr;
+        }
+
+        .page {
+          border-right: none;
+          border-bottom: 2px dashed var(--gb-border-soft);
+          min-height: auto;
+        }
+
+        .page:last-child {
+          border-bottom: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <p class="kicker">Grey-box wireframe — Past Life Archive</p>
+
+      <header class="header-card">
+        <h1>Past Life Archive</h1>
+        <p>Digital divination / archive record system (title + subtitle zone)</p>
+      </header>
+
+      <section class="book-spread" aria-label="Two-page layout wireframe">
+        <section class="page" aria-label="Left page: intake">
+          <h2>Intake ledger</h2>
+          <p class="page-note">
+            User enters present-life fields here. Final build: handwritten-style
+            labels optional.
+          </p>
+
+          <div class="field">
+            <label>Name</label>
+            <div class="input-placeholder" aria-hidden="true"></div>
+          </div>
+          <div class="field">
+            <label>Birth date</label>
+            <div class="input-placeholder" aria-hidden="true"></div>
+          </div>
+          <div class="field">
+            <label>Birth time (optional)</label>
+            <div class="input-placeholder" aria-hidden="true"></div>
+          </div>
+          <div class="field">
+            <label>Place of birth (optional)</label>
+            <div class="input-placeholder" aria-hidden="true"></div>
+          </div>
+
+          <button type="button" class="primary-btn" disabled>
+            Retrieve record
+          </button>
+
+          <p class="annotation">
+            Logic (not shown in grey-box): submit → loading copy → fetch
+            Wikimedia On This Day deaths for MM/DD → filter by birth year →
+            optional “new soul” + fallback button → map interpretation →
+            typewriter / line reveal on right page.
+          </p>
+        </section>
+
+        <section class="page" aria-label="Right page: status + record">
+          <h2>Archive page</h2>
+          <p class="page-note">
+            Status log during retrieval; then record body (match status, archive
+            ID, assigned persona, origin, pattern, closing line).
+          </p>
+
+          <div class="status-zone" aria-hidden="true">
+            Searching historical records…
+            Cross-referencing deaths archive…
+            (loading steps TBD)
+          </div>
+
+          <div class="record-zone" aria-label="Record output placeholder">
+            <div class="record-line medium"></div>
+            <div class="record-line short"></div>
+            <div class="record-line"></div>
+            <div class="record-line"></div>
+            <div class="record-line short"></div>
+            <div class="record-line medium"></div>
+            <div class="record-line"></div>
+            <div class="record-line short"></div>
+            <span style="font-size: 0.7rem; color: var(--gb-muted); margin-top: 0.25rem">
+              Record lines placeholder (animated “writing” in final)
+            </span>
+          </div>
+
+          <div class="fallback-zone">
+            <strong>No exact year match</strong> — show “new soul” copy here;
+            then optional button:
+            <button type="button" class="secondary-btn" disabled>
+              Retrieve nearest trace (same month/day)
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
